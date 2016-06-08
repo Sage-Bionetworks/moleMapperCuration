@@ -3,7 +3,11 @@ require(shiny)
 shinyServer(function(input, output, session){
   
   ## CREATE REACTIVE VALUES TO TRACK WHERE IN THE DATA FRAME WE ARE
-  values <- reactiveValues(ii=1, useDf=curTrackrDf, numImages=nrow(curTrackrDf))
+  values <- reactiveValues(ii=1, 
+                           useDf=curTrackrDf, 
+                           numImages=nrow(curTrackrDf), 
+                           mess="Let's get started!!",
+                           endMess="")
   
   ## GO FORWARD ONE
   observeEvent(input$goNext, {
@@ -39,7 +43,7 @@ shinyServer(function(input, output, session){
   
   ## PERCENT DONE
   output$progress <- renderText({
-    ct <- sum(values$useDf$curCode == -1)
+    ct <- sum(values$useDf$curationCode != -1)
     paste0(ct, '/', values$numImages, ' images curated (', floor(ct/values$numImages*100), '%)')
   })
   
@@ -54,7 +58,20 @@ shinyServer(function(input, output, session){
   observeEvent(input$saveOutput, {
     tmpDat <- values$useDf
     tmpDat$imageLoc <- NULL
-    write.csv(tmpDat, file=file.path("~", "Desktop", paste0("moleMapperCuration-", curator, ".csv")), row.names = FALSE, quote=FALSE)
+    fPath <- file.path("~", "Desktop", paste0("moleMapperCuration-", curator, ".csv"))
+    write.csv(tmpDat, file=fPath, row.names = FALSE, quote=FALSE)
+    values$endMess <- paste0("File saved to: ", fPath)
   })
   
+  ## MOTIVATIONAL MESSAGES
+  observe({
+    i <- values$ii
+    values$mess <- sample(possibleMessages, 1)
+  })
+  output$thisMessage <- renderText({
+    values$mess
+  })
+  output$endMessage <- renderText({
+    values$endMess
+  })
 })
