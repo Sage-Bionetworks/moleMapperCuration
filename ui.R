@@ -8,7 +8,7 @@ shinyUI(navbarPage(
     title="check the images",
     sidebarLayout(
       sidebarPanel(
-        radioButtons('curVal', 'curation', choices=c('not reviewed'=-1, 'ok'=0, 'omit'=1, 'questionable'=2), selected = -1),
+        uiOutput("radButton"),
         actionButton("goPrev", "Previous"),
         actionButton("goNext", "Next"),
         br(),

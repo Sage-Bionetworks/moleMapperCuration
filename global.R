@@ -13,25 +13,31 @@ if(un=="MegDoerr"){
   curator <- "Meg"
 }
 
-tableId <- "syn4984907"
-tab <- synTableQuery(paste0('SELECT * FROM ', tableId))
-
-## GET ALL OF THE IMAGES IN THE TACKING TABLE
-curTrackr <- synTableQuery('SELECT * FROM syn6135990')
-curTrackrDf <- curTrackr@values
-
-curTrackrDf <- curTrackrDf[curTrackrDf$curator == curator, ]
-
-tab@values <- tab@values[!is.na(tab@values$measurementPhoto.png), ]
-tab@values <- tab@values[tab@values$recordId %in% curTrackrDf$recordId, ]
-tabDf <- tab@values
-tabDf <- tabDf[ !duplicated(tabDf$recordId), ]
-imMap <- synDownloadTableColumns(tab, "measurementPhoto.png")
-
-rownames(tabDf) <- tabDf$measurementPhoto.png
-tabDf$imageLoc <- unlist(imMap)[rownames(tabDf)]
-rownames(tabDf) <- tabDf$recordId
-curTrackrDf$imageLoc <- tabDf[curTrackrDf$recordId, "imageLoc"]
+## CHECK TO SEE IF PROGRESS HAS BEEN MADE
+fPath <- file.path("~", "Desktop", paste0("moleMapperCuration-", curator, ".csv"))
+if(file.exists(fPath)){
+  curTrackrDf <- read.csv(fPath, stringsAsFactors = FALSE)
+} else{
+  tableId <- "syn4984907"
+  tab <- synTableQuery(paste0('SELECT * FROM ', tableId))
+  
+  ## GET ALL OF THE IMAGES IN THE TACKING TABLE
+  curTrackr <- synTableQuery('SELECT * FROM syn6135990')
+  curTrackrDf <- curTrackr@values
+  
+  curTrackrDf <- curTrackrDf[curTrackrDf$curator == curator, ]
+  
+  tab@values <- tab@values[!is.na(tab@values$measurementPhoto.png), ]
+  tab@values <- tab@values[tab@values$recordId %in% curTrackrDf$recordId, ]
+  tabDf <- tab@values
+  tabDf <- tabDf[ !duplicated(tabDf$recordId), ]
+  imMap <- synDownloadTableColumns(tab, "measurementPhoto.png")
+  
+  rownames(tabDf) <- tabDf$measurementPhoto.png
+  tabDf$imageLoc <- unlist(imMap)[rownames(tabDf)]
+  rownames(tabDf) <- tabDf$recordId
+  curTrackrDf$imageLoc <- tabDf[curTrackrDf$recordId, "imageLoc"]
+}
 
 possibleMessages <- c("Keep going!", 
                       "These moles aren't going to curate themselves!", 

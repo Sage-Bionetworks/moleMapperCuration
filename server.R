@@ -9,6 +9,11 @@ shinyServer(function(input, output, session){
                            mess="Let's get started!!",
                            endMess="")
   
+  ## SET UP THE RADIO BUTTON
+  output$radButton <- renderUI({
+    isolate(radioButtons('curVal', 'curation', choices=c('not reviewed'=-1, 'ok'=0, 'omit'=1, 'questionable'=2), selected=values$useDf$curationCode[values$ii]))
+  })
+  
   ## GO FORWARD ONE
   observeEvent(input$goNext, {
     values$useDf$curationCode[values$ii] <- input$curVal
@@ -57,7 +62,7 @@ shinyServer(function(input, output, session){
   ## SAVE THE CURATED DATA
   observeEvent(input$saveOutput, {
     tmpDat <- values$useDf
-    tmpDat$imageLoc <- NULL
+    # tmpDat$imageLoc <- NULL
     fPath <- file.path("~", "Desktop", paste0("moleMapperCuration-", curator, ".csv"))
     write.csv(tmpDat, file=fPath, row.names = FALSE, quote=FALSE)
     values$endMess <- paste0("File saved to: ", fPath)
