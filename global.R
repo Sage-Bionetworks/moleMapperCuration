@@ -25,6 +25,7 @@ curTrackrDf <- curTrackrDf[curTrackrDf$curator == curator, ]
 tab@values <- tab@values[!is.na(tab@values$measurementPhoto.png), ]
 tab@values <- tab@values[tab@values$recordId %in% curTrackrDf$recordId, ]
 tabDf <- tab@values
+tabDf <- tabDf[ !duplicated(tabDf$recordId), ]
 imMap <- synDownloadTableColumns(tab, "measurementPhoto.png")
 
 rownames(tabDf) <- tabDf$measurementPhoto.png
