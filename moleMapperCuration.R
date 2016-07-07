@@ -154,7 +154,7 @@ moleData$measurementData.json.diameter <- NULL
 
 moleData$defaultPenny <- moleData$diameter==5.08
 moleData$defaultDime <- moleData$diameter==4.776
-moleData$defaultQuarter <- moleData$diameter==6.469
+moleData$defaultQuarter <- moleData$diameter==6.469334
 
 moleData <- moleData[ order(moleData$createdOn), ]
 
