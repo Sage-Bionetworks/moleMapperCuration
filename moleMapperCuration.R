@@ -152,6 +152,10 @@ moleData$measurementData.json.yCoordinate <- NULL
 moleData$diameter <- moleData$measurementData.json.diameter
 moleData$measurementData.json.diameter <- NULL
 
+moleData$defaultPenny <- moleData$diameter==5.08
+moleData$defaultDime <- moleData$diameter==4.776
+moleData$defaultQuarter <- moleData$diameter==6.469
+
 moleData <- moleData[ order(moleData$createdOn), ]
 
 
@@ -186,6 +190,19 @@ moleData$measurementPhoto.png <- NULL
 imageData$censored <- curData[imageData$recordId, "combinedCall"]
 imageData$measurementPhoto.png[imageData$censored==1] <- NA
 imageData$invalid <- curData[imageData$recordId, "danInvalid"]
+
+## RENAME ALL OF THE FILEHANDLES
+for(i in 1:nrow(imageData)){
+  if(!is.na(imageData$measurementPhoto.png)[i]){
+    tmpFh <- synRestGET(paste0('/fileHandle/', imageData$measurementPhoto.png[i]), 
+                        endpoint = synapseFileServiceEndpoint())
+    tmpFh$fileName <- paste0(imageData$recordId[i], ".png")
+    newFh <- synRestPOST(paste0('/fileHandle/', imageData$measurementPhoto.png[i], '/copy'), 
+                         body=tmpFh, 
+                         endpoint = synapseFileServiceEndpoint())
+    imageData$measurementPhoto.png[i] <- newFh$id
+  }
+}
 
 
 #####
