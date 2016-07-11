@@ -43,7 +43,7 @@ baselineData$initialData.json.familyHistory <- NULL
 baselineData$autoImmune <- baselineData$initialData.json.autoImmune==1
 baselineData$initialData.json.autoImmune <- NULL
 
-baselineData$initialData.json.hairColor <- sub("Hair", "", baselineData$initialData.json.hairColor)
+baselineData$hairColor <- sub("Hair", "", baselineData$initialData.json.hairColor)
 baselineData$initialData.json.hairColor <- NULL
 
 baselineData$immunocompromised <- baselineData$initialData.json.immunocompromised==1
@@ -169,6 +169,8 @@ shareBroadly <- shareData$healthCode[ shareData$sharingScope=="all_qualified_res
 subsetThis <- function(x){
   ## REMOVE THE INELIGIBLE SELF-REPORTED 'YOUNG' PARTICIPANTS
   x <- x[ !(x$healthCode %in% tooYoung), ]
+  ## REMOVE DUPLICATES
+  x <- x[ !duplicated(x[, -which(names(x) %in% c("recordId", "createdOn"))]), ]
   ## KEEP ONLY THOSE WHO CHOSE TO SHARE BROADLY
   x <- x[ x$healthCode %in% shareBroadly, ]
   return(x)
